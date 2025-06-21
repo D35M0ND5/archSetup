@@ -1,16 +1,13 @@
+alacrity
 accerciser
 aircrack-ng
-android-studio
 baobab
-blackbox-terminal-debug
 d-spy
 dconf-editor
 devhelp
 efibootmgr
-elvish
 evince
 file-roller
-fish
 gdm
 gdrive
 gdrive-debug
@@ -70,10 +67,6 @@ man-db
 nano
 neofetch
 neovim
-neovim-cmp-opt-git
-neovim-lspconfig
-neovim-lualine-git
-neovim-plenary
 networkmanager
 obsidian
 polari
@@ -81,7 +74,6 @@ python-pynvim
 quadrapassel
 rygel
 sof-firmware
-steam
 sushi
 sysprof
 tali
@@ -91,7 +83,5 @@ visual-studio-code-bin
 warp-terminal-bin
 wine
 wl-clipboard
-yash
-yash-debug
 yazi
 zsh
