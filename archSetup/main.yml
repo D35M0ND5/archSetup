@@ -10,6 +10,9 @@
     - name: Include package installation
       include_tasks: tasks/install_packages.yml
 
+    - name: Create new users
+      include_tasks: tasks/users.yml
+
     # - name: Include dotfiles setup
     #   include_tasks: tasks/dotfiles.yml
 
