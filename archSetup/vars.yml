@@ -1,0 +1,4 @@
+---
+# Customize these:
+user: "dez"
+dotfiles_repo: "https://github.com/your-repo/dotfiles.git"

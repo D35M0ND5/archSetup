@@ -1,0 +1,17 @@
+---
+- name: Configure Arch Linux
+  hosts: localhost
+  connection: local
+  become: true
+  vars_files:
+  - vars.yml
+
+  tasks:
+    - name: Include package installation
+      include_tasks: tasks/install_packages.yml
+
+    # - name: Include dotfiles setup
+    #   include_tasks: tasks/dotfiles.yml
+
+    - name: Include service management
+      include_tasks: tasks/services.yml

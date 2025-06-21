@@ -1,0 +1,49 @@
+    
+    - name: Load package list
+      include_vars:
+        file: pkglist.txt
+        name: package_list
+
+    - name: Load aur package list
+      include_vars:
+        file: aur_pkglist.txt
+        name: package_list_aur
+
+    - name: Install base packages
+      pacman:
+        name: "{{ package_list.packages }}"  # Assuming pkglist.txt has 'packages:' list
+        state: present
+
+    # - name: Install AUR packages
+    #   command: >
+    #     bash -c 'git clone https://aur.archlinux.org/{{ item }}.git /tmp/{{ item }}
+    #     && cd /tmp/{{ item }}
+    #     && makepkg -si --noconfirm'
+    #   loop: {{ package_list_aur }}
+    #   become: false
+    #   changed_when: false  # Avoid false idempotency warnings
+
+    # - name: install aur packages
+    #   become_user: "{{ ansible_user }}"  # run as regular user
+    #   environment:
+    #     home: "{{ ansible_user_dir }}"
+    #   block:
+    #     - name: clone aur packages
+    #       command: >
+    #         git clone https://aur.archlinux.org/{{ item }}.git
+    #         "{{ ansible_user_dir }}/aur_builds/{{ item }}"
+    #       args:
+    #         creates: "{{ ansible_user_dir }}/aur_builds/{{ item }}/pkgbuild"
+    #       loop: "{{ package_list_aur }}"
+    #       register: clone_results
+    #       changed_when: clone_results.changed
+
+    #     - name: build and install aur packages
+    #       command: >
+    #         makepkg -si --noconfirm
+    #       args:
+    #         chdir: "{{ ansible_user_dir }}/aur_builds/{{ item.item }}"
+    #       loop: "{{ clone_results.results }}"
+    #       when: item.changed
+    #       register: build_results
+    #       changed_when: build_results.changed

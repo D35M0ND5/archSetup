@@ -1,0 +1,6 @@
+
+    - name: Enable NetworkManager
+      systemd:
+        name: NetworkManager
+        enabled: yes
+        state: started

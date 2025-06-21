@@ -1,0 +1,11 @@
+- name: Clone dotfiles
+  git:
+    repo: "{{ dotfiles_repo }}"
+    dest: "/home/{{ user }}/.dotfiles"
+    become: false  # Run as user
+
+- name: Symlink .zshrc
+  file:
+    src: "/home/{{ user }}/.dotfiles/.zshrc"
+    dest: "/home/{{ user }}/.zshrc"
+    state: link
