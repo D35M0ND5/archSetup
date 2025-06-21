@@ -9,7 +9,6 @@ efibootmgr
 evince
 file-roller
 gdm
-gdrive
 gdrive-debug
 ghex
 gitg

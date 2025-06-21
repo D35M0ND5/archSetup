@@ -1,2 +1,3 @@
-aur-android-studio
-aur-visual-studio-code-bin
+android-studio
+visual-studio-code-bin
+gdrive
