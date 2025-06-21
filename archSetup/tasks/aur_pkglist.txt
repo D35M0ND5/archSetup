@@ -1,3 +1,6 @@
 android-studio
-visual-studio-code-bin
+blackbox-terminal
 gdrive
+neofetch
+visual-studio-code-bin
+zen-browser

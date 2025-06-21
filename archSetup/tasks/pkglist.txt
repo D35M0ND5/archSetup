@@ -2,6 +2,7 @@ alacrity
 accerciser
 aircrack-ng
 baobab
+curl
 d-spy
 dconf-editor
 devhelp
@@ -11,6 +12,7 @@ file-roller
 gdm
 gdrive-debug
 ghex
+git
 gitg
 gnome-2048
 gnome-boxes
@@ -64,7 +66,6 @@ linux
 linux-firmware
 man-db
 nano
-neofetch
 neovim
 networkmanager
 obsidian
@@ -77,6 +78,7 @@ sushi
 sysprof
 tali
 tecla
+tmux
 ttf-cascadia-mono-nerd
 visual-studio-code-bin
 warp-terminal-bin
