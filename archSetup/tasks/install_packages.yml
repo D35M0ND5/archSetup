@@ -26,27 +26,35 @@
       become: false
       changed_when: false  # Avoid false idempotency warnings
 
-    # - name: install aur packages
-    #   become_user: "{{ ansible_user }}"  # run as regular user
-    #   environment:
-    #     home: "{{ ansible_user_dir }}"
-    #   block:
-    #     - name: clone aur packages
-    #       command: >
-    #         git clone https://aur.archlinux.org/{{ item }}.git
-    #         "{{ ansible_user_dir }}/aur_builds/{{ item }}"
-    #       args:
-    #         creates: "{{ ansible_user_dir }}/aur_builds/{{ item }}/pkgbuild"
-    #       loop: "{{ package_list_aur }}"
-    #       register: clone_results
-    #       changed_when: clone_results.changed
+    - name: Install AUR packages (user mode)
+      block:
+        - name: Create AUR build directory
+          file:
+            path: "/tmp/aur_builds"
+            state: directory
+            mode: '0755'
+          become: false
+          changed_when: false
 
-    #     - name: build and install aur packages
-    #       command: >
-    #         makepkg -si --noconfirm
-    #       args:
-    #         chdir: "{{ ansible_user_dir }}/aur_builds/{{ item.item }}"
-    #       loop: "{{ clone_results.results }}"
-    #       when: item.changed
-    #       register: build_results
-    #       changed_when: build_results.changed
+        - name: Install AUR packages
+          command: >
+            bash -c '
+            git clone https://aur.archlinux.org/{{ item }}.git /tmp/aur_builds/{{ item }} &&
+            cd /tmp/aur_builds/{{ item }} &&
+            makepkg -si --noconfirm --needed'
+          args:
+            creates: "/usr/bin/{{ item.split('-bin')[0] }}"  # Skip if binary exists
+          loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') }}"
+          become: false
+          environment:
+            HOME: "/home/{{ ansible_user }}"
+            PKGDEST: "/tmp/aur_builds"
+          register: aur_install
+          changed_when: aur_install.rc == 0  # Only shows changed if successful
+
+        - name: Clean build files
+          file:
+            path: "/tmp/aur_builds"
+            state: absent
+          become: false
+          when: aur_install is changed
