@@ -15,14 +15,14 @@
       Include = /etc/pacman.d/mirrorlist
     insertafter: '^#\[multilib\]'  # Looks for commented version first
     backup: yes
-  notify: update pacman cache
+  notify: Update pacman cache
 
 - name: Check enabled repositories  # Optional: Verify multilib was enabled
   command: pacman-conf --repo-list
   register: pacman_repos
   changed_when: "'multilib' not in pacman_repos.stdout"
-  
-- name: Update pacman database
+
+- name: Update pacman cache
   pacman:
     update_cache: yes
   register: pacman_update
