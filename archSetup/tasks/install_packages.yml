@@ -16,51 +16,42 @@
       with_items: "{{ lookup('file', 'pkglist.txt').splitlines() }}"       
       retries: 3
       delay: 10  # Seconds between retries
-
-    - name: Install AUR packages securely
+    - name: Install AUR packages as user
       block:
-        # 1. Setup environment
+        # 1. Prepare build environment
         - name: Create build directory in user's home
           file:
-            path: "/home/{{ user }}/aur_builds"
+            path: "/home/{{ ansible_user }}/aur_builds"
             state: directory
             mode: '0755'
-            owner: "{{ user }}"
-            group: "{{ user }}"
-          become: true
+            owner: "{{ ansible_user }}"
+            group: "{{ ansible_user }}"
+          become: true  # Need root to set permissions initially
 
-        # 2. Install packages
-        - name: Process AUR packages
-          block:
-            - name: Clone and build AUR packages
-              command: >
-                bash -c '
-                git clone https://aur.archlinux.org/{{ item }}.git /home/{{ user }}/aur_builds/{{ item }} &&
-                cd /home/{{ user }}/aur_builds/{{ item }} &&
-                makepkg -si --noconfirm --needed'
-              args:
-                creates: "/usr/bin/{{ item | regex_replace('-bin$', '') }}"
-              loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') | list }}"
-              become: true
-              environment:
-                HOME: "/home/{{ user }}"
-                PKGDEST: "/home/{{ user }}/aur_builds"
-              register: aur_results
-              ignore_errors: yes
-              changed_when: aur_results.rc == 0
+        # 2. Install packages as regular user
+        - name: Build and install AUR packages
+          become: false
+          become_user: "{{ ansible_user }}"
+          environment:
+            HOME: "/home/{{ ansible_user }}"
+            PKGDEST: "/home/{{ ansible_user }}/aur_builds"
+          command: >
+            bash -c '
+            set -e
+            [[ ! -d "/home/{{ ansible_user }}/aur_builds/{{ item }}" ]] &&
+            git clone https://aur.archlinux.org/{{ item }}.git "/home/{{ ansible_user }}/aur_builds/{{ item }}"
+            cd "/home/{{ ansible_user }}/aur_builds/{{ item }}"
+            makepkg -si --noconfirm --needed'
+          args:
+            creates: "/usr/bin/{{ item | regex_replace('-bin$', '') }}"
+          loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') | list }}"
+          register: aur_install
+          changed_when: aur_install.rc == 0
 
-          rescue:
-            - name: Clean failed builds
-              file:
-                path: "/home/{{ user }}/aur_builds/{{ item }}"
-                state: absent
-              loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() }}"
-              become: false
-
-        # 3. Final cleanup
+        # 3. Cleanup
         - name: Remove build directory
           file:
-            path: "/home/{{ user }}/aur_builds"
+            path: "/home/{{ ansible_user }}/aur_builds"
             state: absent
-          become: false
-          when: aur_results is defined
+          become: true
+          when: aur_install is changed
