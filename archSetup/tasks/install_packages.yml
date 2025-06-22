@@ -27,7 +27,7 @@
             mode: '0755'
             owner: "{{ user }}"
             group: "{{ user }}"
-          become: false
+          become: true
 
         # 2. Install packages
         - name: Process AUR packages
@@ -41,7 +41,7 @@
               args:
                 creates: "/usr/bin/{{ item | regex_replace('-bin$', '') }}"
               loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') | list }}"
-              become: false
+              become: true
               environment:
                 HOME: "/home/{{ user }}"
                 PKGDEST: "/home/{{ user }}/aur_builds"
