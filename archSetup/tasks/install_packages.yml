@@ -38,7 +38,7 @@
           loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') }}"
           become: false
           environment:
-            HOME: "/home/{{ ansible_user }}"
+            HOME: "/home/{{ user }}"
             PKGDEST: "/tmp/aur_builds"
           register: aur_install
           changed_when: aur_install.rc == 0  # Only shows changed if successful
