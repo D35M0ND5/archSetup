@@ -5,13 +5,23 @@
   become: true
   vars_files:
   - vars.yml
+  
+  handlers:
+    - name: Update pacman cache  # Handler name must match EXACTLY
+      command: >
+        pacman -Syy
+      changed_when: false  # Always runs when notified
+
 
   tasks:
+    - name: Create new users module
+      include_tasks: tasks/users.yml
+
+    - name: Configure pacman
+      include_tasks: tasks/pacman_config.yml
+
     - name: Include package installation
       include_tasks: tasks/install_packages.yml
-
-    - name: Create new users
-      include_tasks: tasks/users.yml
 
     # - name: Include dotfiles setup
     #   include_tasks: tasks/dotfiles.yml
