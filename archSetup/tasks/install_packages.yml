@@ -17,15 +17,6 @@
       retries: 3
       delay: 10  # Seconds between retries
 
-    - name: Install AUR packages
-      command: >
-        bash -c 'git clone https://aur.archlinux.org/{{ item }}.git /tmp/{{ item }}
-        && cd /tmp/{{ item }}
-        && makepkg -si --noconfirm'
-      with_items: "{{ lookup('file', 'aur_pkglist.txt').splitlines() }}"
-      become: false
-      changed_when: false  # Avoid false idempotency warnings
-
     - name: Install AUR packages (user mode)
       block:
         - name: Create AUR build directory
