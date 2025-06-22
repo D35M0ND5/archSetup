@@ -21,7 +21,7 @@
       block:
         - name: Create AUR build directory
           file:
-            path: "/tmp/aur_builds"
+            path: "/home/{{ user }}/tmp/aur_builds"
             state: directory
             mode: '0755'
           become: false
@@ -30,11 +30,11 @@
         - name: Install AUR packages
           environment:
             HOME: "/home/{{ user }}"
-            PKGDEST: "/tmp/aur_builds"
+            PKGDEST: "/home/{{ user }}/tmp/aur_builds"
           command: >
             bash -c '
-            git clone https://aur.archlinux.org/{{ item }}.git /tmp/aur_builds/{{ item }} &&
-            cd /tmp/aur_builds/{{ item }} &&
+            git clone https://aur.archlinux.org/{{ item }}.git /home/{{ user }}/tmp/aur_builds/{{ item }} &&
+            cd /home/{{ user }}/tmp/aur_builds/{{ item }} &&
             makepkg -si --noconfirm --needed'
           args:
             creates: "/usr/bin/{{ item.split('-bin')[0] }}"  # Skip if binary exists
@@ -45,7 +45,7 @@
 
         - name: Clean build files
           file:
-            path: "/tmp/aur_builds"
+            path: "/home/{{ user }}/tmp/aur_builds"
             state: absent
           become: false
           when: aur_install is changed
