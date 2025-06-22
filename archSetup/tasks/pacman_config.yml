@@ -6,6 +6,11 @@
     backup: yes  # Creates backup of original file
   notify: Update pacman cache  # Handler to refresh after config change
   
+- name: Check enabled repositories  # Optional: Verify multilib was enabled
+  command: pacman-conf --repo-list
+  register: pacman_repos
+  changed_when: "'multilib' not in pacman_repos.stdout"
+
 - name: Enable multilib repository
   lineinfile:
     path: /etc/pacman.conf
@@ -15,6 +20,7 @@
       Include = /etc/pacman.d/mirrorlist
     insertafter: '^#\[multilib\]'  # Looks for commented version first
     backup: yes
+  when: "'multilib' not in pacman_repos.stdout"
   notify: Update pacman cache
 
 - name: Check enabled repositories  # Optional: Verify multilib was enabled
