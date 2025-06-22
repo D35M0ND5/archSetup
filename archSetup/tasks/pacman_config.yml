@@ -1,0 +1,35 @@
+- name: Configure pacman to disable parallel downloads
+  lineinfile:
+    path: /etc/pacman.conf
+    regexp: '^#?ParallelDownloads'
+    line: 'ParallelDownloads = 1'
+    backup: yes  # Creates backup of original file
+  notify: Update pacman cache  # Handler to refresh after config change
+  
+- name: Enable multilib repository
+  lineinfile:
+    path: /etc/pacman.conf
+    regexp: '^#?\[multilib\]'
+    line: |
+      [multilib]
+      Include = /etc/pacman.d/mirrorlist
+    insertafter: '^#\[multilib\]'  # Looks for commented version first
+    backup: yes
+  notify: update pacman cache
+
+- name: Check enabled repositories  # Optional: Verify multilib was enabled
+  command: pacman-conf --repo-list
+  register: pacman_repos
+  changed_when: "'multilib' not in pacman_repos.stdout"
+  
+- name: Update pacman database
+  pacman:
+    update_cache: yes
+  register: pacman_update
+  until: pacman_update is succeeded  # Retry if fails
+  retries: 5
+  delay: 10  # Seconds between retries
+
+- name: Force refresh of all package databases
+  command: pacman -Syy
+  when: pacman_update is changed  # Only if normal update changed something 

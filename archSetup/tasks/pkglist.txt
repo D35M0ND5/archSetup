@@ -1,4 +1,4 @@
-alacrity
+alacritty
 accerciser
 aircrack-ng
 baobab
@@ -10,7 +10,6 @@ efibootmgr
 evince
 file-roller
 gdm
-gdrive-debug
 ghex
 git
 gitg
@@ -65,6 +64,7 @@ lightsoff
 linux
 linux-firmware
 man-db
+man-pages
 nano
 neovim
 networkmanager
@@ -80,8 +80,6 @@ tali
 tecla
 tmux
 ttf-cascadia-mono-nerd
-visual-studio-code-bin
-warp-terminal-bin
 wine
 wl-clipboard
 yazi

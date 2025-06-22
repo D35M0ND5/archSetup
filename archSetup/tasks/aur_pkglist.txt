@@ -1,6 +1,7 @@
 android-studio
 blackbox-terminal
 gdrive
+gdrive-debug
 neofetch
 visual-studio-code-bin
 zen-browser
