@@ -38,6 +38,7 @@ fi
 # Check package names:
 echo "........................"
 echo "Validating package list..."
+touch "$BUILD_DIR/clean.txt"
 sed -E 's/\r$//; s/^[[:space:]]+//; s/[[:space:]]+$//; /^$/d' aur_pkglist.txt > $BUILD_DIR/clean.txt 
 while IFS= read -r pkg; do
   if [[ "$pkg" =~ ^[a-zA-Z0-9-]+$ ]]; then
@@ -49,7 +50,7 @@ done < $BUILD_DIR/clean.txt
 
 
 # Read package list - remove CR, trim spaces, skip empty lines
-mapfile -t packages < clean.txt
+mapfile -t packages < $BUILD_DIR/clean.txt
 
 
 # Install packages
@@ -60,6 +61,8 @@ for pkg in "${packages[@]}"; do
   
   # Skip if binary already exists
   if command -v "$pkg_name" >/dev/null 2>&1; then
+    echo "\n"
+    echo "........................"
     echo "Skipping $pkg (already installed)"
     continue
   fi
