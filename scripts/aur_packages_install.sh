@@ -21,20 +21,36 @@ if ! id -u "$USER" >/dev/null 2>&1; then
 fi
 
 # Create build directory
+echo "........................"
 echo "Creating build directory..."
 sudo mkdir -p "$BUILD_DIR"
 sudo chown "$USER:$USER" "$BUILD_DIR"
 sudo chmod 755 "$BUILD_DIR"
 
 # Process package list
+echo "........................"
 echo "Processing package list..."
 if [[ ! -f "$PKGLIST" ]]; then
   echo "Error: Package list $PKGLIST not found"
   exit 1
 fi
 
-# Read and validate package list
-mapfile -t packages < <(grep -E '^[a-zA-Z0-9-]+$' "$PKGLIST")
+# Check package names:
+echo "........................"
+echo "Validating package list..."
+sed -E 's/\r$//; s/^[[:space:]]+//; s/[[:space:]]+$//; /^$/d' aur_pkglist.txt > $BUILD_DIR/clean.txt 
+while IFS= read -r pkg; do
+  if [[ "$pkg" =~ ^[a-zA-Z0-9-]+$ ]]; then
+    echo "VALID: $pkg"
+  else
+    echo "INVALID: $pkg"
+  fi
+done < $BUILD_DIR/clean.txt
+
+
+# Read package list - remove CR, trim spaces, skip empty lines
+mapfile -t packages < clean.txt
+
 
 # Install packages
 changed=false
@@ -48,6 +64,9 @@ for pkg in "${packages[@]}"; do
     continue
   fi
 
+  echo "\n"
+  echo "........................"
+  echo "\n"
   echo "Installing $pkg..."
   
   # Clone and build
@@ -67,8 +86,10 @@ done
 
 # Cleanup if successful
 if $changed; then
+  echo "........................"
   echo "Cleaning up build directory..."
   sudo rm -rf "$BUILD_DIR"
 fi
 
+echo "........................"
 echo "=== AUR Installation Completed $(date) ==="
