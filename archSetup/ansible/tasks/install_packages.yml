@@ -1,19 +1,19 @@
     
     # - name: Load package list
     #   include_vars:
-    #     file: pkglist.txt
+    #     file: /files/pkglist.txt
     #     name: package_list
 
     # - name: Load aur package list
     #   include_vars:
-    #     file: aur_pkglist.txt
+    #     file: /files/aur_pkglist.txt
     #     name: package_list_aur
 
     - name: Install base packages
       pacman:
         name: "{{ item }}"
         state: present
-      with_items: "{{ lookup('file', 'pkglist.txt').splitlines() }}"       
+      with_items: "{{ lookup('file', '/files/pkglist.txt').splitlines() }}"       
       retries: 3
       delay: 10  # Seconds between retries
     - name: Install AUR packages as user
@@ -44,7 +44,7 @@
             makepkg -si --noconfirm --needed'
           args:
             creates: "/usr/bin/{{ item | regex_replace('-bin$', '') }}"
-          loop: "{{ lookup('file', 'aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') | list }}"
+          loop: "{{ lookup('file', '/files/aur_pkglist.txt').splitlines() | select('match', '^[a-zA-Z0-9-]+$') | list }}"
           register: aur_install
           changed_when: aur_install.rc == 0
 
