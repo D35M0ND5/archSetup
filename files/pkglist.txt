@@ -1,86 +1,22 @@
-accerciser
-aircrack-ng
-baobab
-curl
-d-spy
-dconf-editor
-devhelp
-efibootmgr
-evince
-file-roller
-gdm
-ghex
-git
-gitg
-gnome-2048
-gnome-boxes
-gnome-builder
-gnome-calculator
-gnome-characters
-gnome-chess
-gnome-clocks
-gnome-color-manager
-gnome-connections
-gnome-control-center
-gnome-devel-docs
-gnome-dictionary
-gnome-disk-utility
-gnome-font-viewer
-gnome-klotski
-gnome-logs
-gnome-mahjongg
-gnome-menus
-gnome-mines
-gnome-multi-writer
-gnome-nibbles
-gnome-remote-desktop
-gnome-shell
-gnome-shell-extensions
-gnome-software
-gnome-sudoku
-gnome-system-monitor
-gnome-taquin
-gnome-terminal
-gnome-tetravex
-gnome-tweaks
-gnome-user-docs
-gnome-user-share
-grilo-plugins
-grub
-gvfs-afc
-gvfs-dnssd
-gvfs-goa
-gvfs-google
-gvfs-gphoto2
-gvfs-mtp
-gvfs-nfs
-gvfs-onedrive
-gvfs-smb
-gvfs-wsdd
-hitori
-iagno
-kicad
-lightsoff
-linux
-linux-firmware
-man-db
-man-pages
-nano
-neovim
-networkmanager
-obsidian
-polari
-python-pynvim
-quadrapassel
-rygel
-sof-firmware
-sushi
-sysprof
-tali
-tecla
-tmux
-ttf-cascadia-mono-nerd
-wine
-wl-clipboard
-yazi
-zsh
+{
+  "version": "2.5.0",
+  "disk_config": "auto",
+  "filesystem": "btrfs",
+  "hostname": "{{ hostname }}",
+  "!users": [
+    {
+      "username": "{{ username }}",
+      "password": "{{ password | default('arch') }}",
+      "!sudo": true
+    }
+  ],
+  "profile": "minimal",
+  "audio": "pipewire",
+  "kernels": ["linux"],
+  "nic": {
+    "dhcp": true,
+    "dns": null,
+    "gateway": null,
+    "iface": null
+  }
+}

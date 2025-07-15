@@ -12,19 +12,67 @@
         pacman -Syy
       changed_when: false  # Always runs when notified
 
-
   tasks:
+    # Stage 1: Pre-install tasks
+    - name: Prepare archinstall config
+      template:
+        src: files/archinstall_config.json
+        dest: /tmp/archinstall_config.json
+        mode: 0600
+
+    - name: Prepare archinstall credentials
+      template:
+        src: files/user_credentials.json
+        dest: /tmp/user_credentials.json
+        mode: 0600
+
+    # Stage 2: Run archinstall
+    - name: Run automated archinstall
+      command: >
+        archinstall --config /tmp/archinstall_config.json
+        --creds /tmp/archinstall_creds.json
+        --disk-layout /tmp/archinstall_disk.json
+      args:
+        creates: /mnt/etc/os-release  # Only runs if system not installed
+      register: archinstall_result
+
+    # Stage 3: Post-install chroot tasks
+    - name: Configure chroot environment
+      block:
+        - name: Copy Ansible setup to new install
+          copy:
+            src: "{{ playbook_dir }}"
+            dest: /mnt/root/ansible-setup
+            remote_src: yes
+
+        - name: Generate chroot script
+          template:
+            src: scripts/chroot_script.sh
+            dest: /mnt/root/chroot_script.sh
+            mode: 0755
+
+        - name: Execute tasks in chroot
+          command: arch-chroot /mnt /root/chroot_script.sh
+          register: chroot_result
+          changed_when: chroot_result.rc == 0
+
+      when: archinstall_result.changed
+
     - name: Create new users module
       include_tasks: tasks/users.yml
+      tags: post_install
 
     - name: Configure pacman
       include_tasks: tasks/pacman_config.yml
+      tags: post_install
 
     - name: Include package installation
       include_tasks: tasks/install_packages.yml
+      tags: post_install
 
     # - name: Include dotfiles setup
     #   include_tasks: tasks/dotfiles.yml
 
     - name: Include service management
       include_tasks: tasks/services.yml
+      tags: post_install
